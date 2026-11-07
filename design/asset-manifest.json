@@ -1,0 +1,67 @@
+[
+  {
+    "path": "design/reference-assets/approved-wedding-logo-source.jpg",
+    "source": "/Users/shrutisuryawanshi/Library/Containers/net.whatsapp.WhatsApp/Data/tmp/documents/717579E8-2C08-45BA-9A2D-93561737DFAC/PHOTO-2026-10-29-00-01-47.jpg",
+    "bytes": 164128,
+    "sha256": "ed0f86a3bb334fe37ca192b2efffa677676a272d93ccfbc4994a64e4754104f1",
+    "image": {
+      "pixelWidth": "1024",
+      "pixelHeight": "1024",
+      "hasAlpha": "no"
+    },
+    "notes": "Supplied approved logo artwork; full illustrated composition, not isolated transparent monogram.",
+    "used_by_app": false
+  },
+  {
+    "path": "design/reference-assets/moonlit-mobile-source.png",
+    "source": "/var/folders/88/fj46q_wd54qdfjrhw3x0718h0000gn/T/codex-clipboard-35bcfc71-de3f-48ee-925b-6e2caf127ef4.png",
+    "bytes": 2125480,
+    "sha256": "af6a1c2277ad88550e2867711c779cd5502391cac9eb6924d46dfdc934378cfb",
+    "image": {
+      "pixelWidth": "941",
+      "pixelHeight": "1672",
+      "hasAlpha": "no"
+    },
+    "notes": "Supplied portrait moonlit lake and palace; hero background candidate.",
+    "used_by_app": false
+  },
+  {
+    "path": "design/reference-assets/moonlit-desktop-source.png",
+    "source": "/var/folders/88/fj46q_wd54qdfjrhw3x0718h0000gn/T/codex-clipboard-8ba5dac7-abdc-4975-a9e5-acfaabc33a42.png",
+    "bytes": 2153745,
+    "sha256": "a22676d967ce87f9276da64c7bb6f78fb9ddd2074cdb7e52228d51bd2177ead5",
+    "image": {
+      "pixelWidth": "1672",
+      "pixelHeight": "941",
+      "hasAlpha": "no"
+    },
+    "notes": "Supplied landscape moonlit lake and palace; hero background candidate.",
+    "used_by_app": false
+  },
+  {
+    "path": "design/reference-assets/watercolor-story-desktop-source.png",
+    "source": "/var/folders/88/fj46q_wd54qdfjrhw3x0718h0000gn/T/codex-clipboard-5964f6b0-54b4-4119-8d1f-012dc7d71f7f.png",
+    "bytes": 2561950,
+    "sha256": "0a6288ad7c0a5fa98eac5db680ee0e9c33cc12316894537580d9e630203e850e",
+    "image": {
+      "pixelWidth": "1738",
+      "pixelHeight": "905",
+      "hasAlpha": "no"
+    },
+    "notes": "Supplied landscape badminton, chai, moon and music artwork.",
+    "used_by_app": false
+  },
+  {
+    "path": "design/reference-assets/watercolor-story-mobile-source.png",
+    "source": "/var/folders/88/fj46q_wd54qdfjrhw3x0718h0000gn/T/codex-clipboard-a4d9dee6-afad-4cc1-9993-75e8d73b330d.png",
+    "bytes": 2404923,
+    "sha256": "2f803929eb8cbb74b694d75475ee6419d81734524a243242d568d031f7f874f1",
+    "image": {
+      "pixelWidth": "1122",
+      "pixelHeight": "1402",
+      "hasAlpha": "no"
+    },
+    "notes": "Supplied portrait badminton, chai, moon and music artwork.",
+    "used_by_app": false
+  }
+]
