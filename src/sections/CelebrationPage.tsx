@@ -14,7 +14,7 @@ function Directions({ index }: { index: number }) {
 export function CelebrationPage({ id }: { id: CelebrationId }) {
   const index = celebrationIds.indexOf(id);
   const event = wedding.events[index];
-  const venues = id === 'mehendi' ? [arrangements[0], arrangements[1]] : [arrangements[index + 1]];
+  const venues = id === 'mehendi' ? [arrangements[1], arrangements[0]] : [arrangements[index + 1]];
   const date = event.date.replace(/^(\w+), (\w+) (\d+), (\d+)$/, '$1, $3 $2 $4');
   const title = id === 'wedding' ? 'The Wedding' : id === 'reception' ? 'Reception' : event.name;
   return <article className={'book-event-page book-event-'+id}>
@@ -22,7 +22,7 @@ export function CelebrationPage({ id }: { id: CelebrationId }) {
     <ScheduleBlock date={date} time={id === 'wedding' ? '10:15 AM IST' : event.time.replace(/\s+onwards$/i, '')} timeNote={id === 'wedding' ? 'Vivah Muhurat' : 'Onwards · IST'} programme={id === 'wedding' ? 'Programme begins · 9:00 AM' : undefined} extra={'extra' in event ? event.extra : undefined}/>
     <img className="celebration-art" src={'/images/celebration-'+id+'.webp'} alt={'Watercolor illustration for '+title} width="900" height="1125" loading="eager" decoding="async"/>
     <div className="celebration-details">
-      <div className="celebration-venues" data-venue-details>{venues.map(venue=><section className="celebration-venue" key={venue.label}>{id === 'mehendi' && <p className="book-label">{venue.label}</p>}<h3 tabIndex={-1}>{venue.venue}</h3>{venue.floor && <p>{venue.floor}</p>}{venue.locality && (id === 'mehendi' && venue.directionsIndex === null ? <p>{groomResidenceAddressLines.map((line,i)=><span key={line}>{i > 0 && <br/>}{line}</span>)}</p> : <p>{venue.locality}</p>)}{venue.directionsIndex !== null ? <Directions index={venue.directionsIndex}/> : id === 'mehendi' && <a className="book-direction celebration-direction" href={groomResidenceDirections} target="_blank" rel="noreferrer">Get directions ↗</a>}{id === 'mehendi' && venue.directionsIndex !== null && <CalendarControls index={calendarIndexes[index]}/>}</section>)}</div>
+      <div className="celebration-venues" data-venue-details>{venues.map(venue=><section className="celebration-venue" key={venue.label}>{id === 'mehendi' && <p className="book-label">{venue.label}</p>}<h3 tabIndex={-1}>{venue.venue}</h3>{venue.floor && <p>{venue.floor}</p>}{venue.locality && (id === 'mehendi' && venue.directionsIndex === null ? <p>{groomResidenceAddressLines.map((line,i)=><span key={line}>{i > 0 && <br/>}{line}</span>)}</p> : <p>{venue.locality}</p>)}{venue.directionsIndex !== null ? <Directions index={venue.directionsIndex}/> : id === 'mehendi' && <a className="book-direction celebration-direction" href={groomResidenceDirections} target="_blank" rel="noreferrer">Get directions ↗</a>}{id === 'mehendi' && <CalendarControls index={venue.directionsIndex === null ? 5 : calendarIndexes[index]}/>}</section>)}</div>
       {id !== 'mehendi' && <CalendarControls index={calendarIndexes[index]}/>}
     </div>
   </article>;

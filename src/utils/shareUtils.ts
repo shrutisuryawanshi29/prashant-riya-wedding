@@ -6,8 +6,16 @@ export function publicSiteUrl(value: string | undefined): string | null {
     url.hash = ''; url.search = ''; return url.href;
   } catch { return null; }
 }
-export const canonicalUrl = publicSiteUrl(import.meta.env.VITE_SITE_URL);
-export const invitationShareText = "You're warmly invited to celebrate the wedding of Riya & Prashant! Join us as we begin our forever on 3 December 2026. View our invitation:";
+export function localPreviewUrl(value: string | undefined): string | null {
+  if (!value || !import.meta.env.DEV) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'http:' || !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return null;
+    return url.origin + '/';
+  } catch { return null; }
+}
+export const canonicalUrl = publicSiteUrl(import.meta.env.VITE_SITE_URL) || (typeof window !== 'undefined' ? publicSiteUrl(window.location.origin) || localPreviewUrl(window.location.origin) : null);
+export const invitationShareText = "You're warmly invited to celebrate the wedding of Prashant & Riya! Join us as we begin our forever on 3 December 2026. View our invitation:";
 export function whatsappUrl(url: string) {
   return 'https://wa.me/?text=' + encodeURIComponent(`${invitationShareText} ${url}`);
 }

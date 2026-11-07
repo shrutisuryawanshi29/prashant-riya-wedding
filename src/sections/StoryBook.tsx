@@ -5,19 +5,19 @@ import { wedding } from '../data';
 import { BookPageFrame } from '../components/BookPageFrame';
 import { BookScrollRegion } from '../components/BookScrollRegion';
 import { CelebrationPage, type CelebrationId } from './CelebrationPage';
-import { MomentsChapter, InvitationChapter, VenuesChapter, EpilogueChapter } from './BookChapters';
+import { InvitationChapter, VenuesChapter, EpilogueChapter } from './BookChapters';
 
-type Page = 'cover' | 'moments' | 'invitation' | CelebrationId | 'venues' | 'venue-reception' | 'epilogue';
-const pages: Page[] = ['cover', 'moments', 'invitation', 'mehendi', 'engagement', 'haldi', 'wedding', 'reception', 'venues', 'venue-reception', 'epilogue'];
-const labels = ['Cover', 'Our Moments', 'Until Forever', 'Mehendi', 'Engagement', 'Haldi', 'Wedding', 'Reception', 'Join Us · Nagpur', 'Join Us · Thane', 'Our Story, Our Forever'];
-function pageFromHash(): Page { const key = window.location.hash.slice(1); return pages.includes(key as Page) ? key as Page : key === 'celebrations' ? 'mehendi' : ['little','places','story','chapter'].includes(key) ? 'epilogue' : 'cover'; }
+type Page = 'cover' | 'invitation' | Exclude<CelebrationId, 'reception'> | 'venues' | 'epilogue';
+const pages: Page[] = ['cover', 'invitation', 'mehendi', 'engagement', 'haldi', 'wedding', 'venues', 'epilogue'];
+const labels = ['Cover', 'Until Forever', 'Mehendi', 'Engagement', 'Haldi', 'Wedding', 'Join Us · Nagpur', 'Our Story, Our Forever'];
+function pageFromHash(): Page { const key = window.location.hash.slice(1); return pages.includes(key as Page) ? key as Page : key === 'celebrations' ? 'mehendi' : ['moments', 'reception', 'venue-reception'].includes(key) ? 'invitation' : ['little','places','story','chapter'].includes(key) ? 'epilogue' : 'cover'; }
 
 function BookCover({ open }: { open: () => void }) {
   return <div className="book-cover-content">
-    <div className="book-cover-heading"><h1>{wedding.couple.bride} <span>&amp;</span><br />{wedding.couple.groom}</h1><svg className="book-cover-name-flourish" viewBox="0 0 180 18" fill="none" aria-hidden="true"><path d="M2 12c25-10 42-9 64-3m48 0c22-6 39-7 64 3M84 8c0-6 6-6 6-2 0-4 6-4 6 2 0 4-6 8-6 8s-6-4-6-8Z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/></svg><p className="book-cover-subtitle">A love story blossoming into forever.</p><p className="book-cover-date">3 December 2026 · Nagpur</p></div>
-    <div className="book-cover-photo"><div className="book-photo-mat"><img src="/images/cover-indoor.webp" width="1204" height="1600" alt="Riya and Prashant standing together indoors" style={{objectPosition:'center 12%'}} /><img className="cover-floral-overlay" src="/images/watercolor-floral-gold-arch.webp" width="1086" height="1448" alt="" aria-hidden="true" /><img className="cover-floral-arch" src="/images/cover-blush-floral-arch.webp" width="2172" height="724" alt="" aria-hidden="true" /></div></div>
+    <div className="book-cover-heading"><h1>{wedding.couple.groom} <span>&amp;</span><br />{wedding.couple.bride}</h1><svg className="book-cover-name-flourish" viewBox="0 0 180 18" fill="none" aria-hidden="true"><path d="M2 12c25-10 42-9 64-3m48 0c22-6 39-7 64 3M84 8c0-6 6-6 6-2 0-4 6-4 6 2 0 4-6 8-6 8s-6-4-6-8Z" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/></svg><p className="book-cover-subtitle">A love story blossoming into forever.</p><p className="book-cover-date">3 December 2026 · Nagpur</p></div>
+    <div className="book-cover-photo"><div className="book-photo-mat"><img src="/images/cover-indoor.webp" width="1204" height="1600" alt="Prashant and Riya standing together indoors" style={{objectPosition:'center 12%'}} /><img className="cover-floral-overlay" src="/images/watercolor-floral-gold-arch.webp" width="1086" height="1448" alt="" aria-hidden="true" /><img className="cover-floral-arch" src="/images/cover-blush-floral-arch.webp" width="2172" height="724" alt="" aria-hidden="true" /></div></div>
     <svg className="book-cover-trail" viewBox="0 0 400 100" fill="none" aria-hidden="true"><path d="M15 83C80 0 151 61 225 55c38-3 41-42 55-34 12 7-2 25-12 34 16 5 45 5 93-32" stroke="currentColor" strokeDasharray="3 4" strokeWidth="1.4"/><path d="M19 80l-7-12 12 5-5 7Zm-7-12-6-8 12 3 6 10" stroke="currentColor" strokeWidth="1.2"/></svg>
-    <button className="book-open" onClick={open}>Open our story <span aria-hidden="true">→</span></button>
+    <button className="book-open" onClick={open}>Join us in celebration <span aria-hidden="true">→</span></button>
   </div>;
 }
 
@@ -175,12 +175,10 @@ export function StoryBook() {
     };
   }, [sheets]);
   function content(which: Page) {switch(which) {
-    case 'cover': return <BookCover open={() => turn('moments')}/>;
-    case 'moments': return <MomentsChapter/>;
+    case 'cover': return <BookCover open={() => turn('invitation')}/>;
     case 'invitation': return <InvitationChapter/>;
-    case 'mehendi': case 'engagement': case 'haldi': case 'wedding': case 'reception': return <CelebrationPage id={which}/>;
+    case 'mehendi': case 'engagement': case 'haldi': case 'wedding': return <CelebrationPage id={which}/>;
     case 'venues': return <VenuesChapter venueIndex={0}/>;
-    case 'venue-reception': return <VenuesChapter venueIndex={1}/>;
     case 'epilogue': return <EpilogueChapter/>;
   }}
   // Keep the chapter React elements stable while the renderer animates cloned paper.
@@ -197,8 +195,8 @@ export function StoryBook() {
     </div>
     {sheets.map((sheet,i)=>createPortal(<div className={"book-sheet-content"+(i===0?" book-sheet-cover":"")}>
       <BookPageFrame/>
-      <BookScrollRegion cover={i===0} active={page===pages[i] && !turning} venueCue={['mehendi','engagement','haldi','wedding','reception','venues','venue-reception'].includes(pages[i])} hintSeen={scrollHintSeen} onFirstScroll={dismissScrollHint}>{chapterContent[i]}</BookScrollRegion>
-      {i>0 && <div className="book-controls"><button aria-label="Previous page" onClick={()=>turn(pages[i-1])}>←</button><span className="book-page-number"><small>{pages[i]==='epilogue'?'Epilogue':`Chapter ${i===1?1:i===2?2:i<=7?3:4} of 4`}</small>{String(i+1).padStart(2,'0')} / {pages.length}</span><button aria-label="Next page" disabled={i===pages.length-1} onClick={()=>turn(pages[i+1])}>→</button></div>}
+      <BookScrollRegion cover={i===0} active={page===pages[i] && !turning} venueCue={['mehendi','engagement','haldi','wedding','venues'].includes(pages[i])} hintSeen={scrollHintSeen} onFirstScroll={dismissScrollHint}>{chapterContent[i]}</BookScrollRegion>
+      {i>0 && <div className="book-controls"><button aria-label="Previous page" onClick={()=>turn(pages[i-1])}>←</button><span className="book-page-number"><small>{pages[i]==='epilogue'?'Epilogue':`Chapter ${i===1?1:i<=5?2:3} of 3`}</small>{String(i+1).padStart(2,'0')} / {pages.length}</span><button aria-label="Next page" disabled={i===pages.length-1} onClick={()=>turn(pages[i+1])}>→</button></div>}
     </div>,sheet,pages[i]))}
     <p className="book-status" aria-live="polite">{labels[pages.indexOf(page)]} · {pages.indexOf(page)+1} of {pages.length}</p>
   </section>;

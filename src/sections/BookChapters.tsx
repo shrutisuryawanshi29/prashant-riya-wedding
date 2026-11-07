@@ -31,7 +31,7 @@ export function MomentsChapter() {
 }
 
 export function InvitationChapter() {
- return <article className="book-new-chapter book-invitation"><ChapterHeading number="Chapter two" title="Until Forever Begins" subtitle="A moment we have been waiting for"/><WeddingCountdown/><ScheduleBlock date="Thursday, 3 December 2026" time="10:15 AM IST" timeNote="Vivah Muhurat"/><p>With divine blessings and the love of our families, we joyfully invite you to celebrate our wedding.</p><img className="book-invitation-logo" src="/images/wedding-logo-blended.webp" alt="Prashant and Riya wedding logo" width="768" height="768" loading="lazy" decoding="async"/><details className="book-disclosure"><summary>Read Our Invitation</summary><div className="book-family"><p>{w.invocations[0]}<br/>{w.invocations[1]}</p><p>With the blessings of<br/><strong>{w.grandparents}</strong></p><p>Together with their families, we joyfully invite you to celebrate the wedding of</p><h3>{w.couple.bride}</h3><p>Daughter of<br/><strong>{w.parents.bride}</strong></p><h3>{w.couple.groom}</h3><p>Son of<br/><strong>{w.parents.groom}</strong></p></div></details></article>;
+ return <article className="book-new-chapter book-invitation"><ChapterHeading number="Chapter one" title="Until Forever Begins" subtitle="A moment we have been waiting for"/><WeddingCountdown/><ScheduleBlock date="Thursday, 3 December 2026" time="10:15 AM IST" timeNote="Vivah Muhurat"/><p>With divine blessings and the love of our families, we joyfully invite you to celebrate our wedding.</p><img className="book-invitation-logo" src="/images/wedding-logo-blended.webp" alt="Prashant and Riya wedding logo" width="768" height="768" loading="lazy" decoding="async"/><details className="book-disclosure"><summary>Read Our Invitation</summary><div className="book-family"><p>॥ Satyanaam ॥</p><p>With the divine grace of <strong>Satpurush Sadguru Kabir Saheb</strong> and <strong>Dhani Dharmdas Saheb</strong>,</p><p>and the auspicious blessings of <strong>Param Pujya Panth Shri Huzoor Prakashmuni Naam Saheb</strong> and <strong>Panth Shri Huzoor Uditmuni Naam Saheb</strong></p><p>As two families come together to celebrate the beginning of a beautiful new journey,</p><h3>{w.couple.groom}</h3><p>Son of<br/><strong>Smt. Alka &amp; Shri Ramesh Bhagwandas Mahant</strong></p><h3>{w.couple.bride}</h3><p>Daughter of<br/><strong>Smt. Maya &amp; Shri Vinod Venkatsa Kalburgi</strong></p></div></details></article>;
 }
 
 export function CelebrationsChapter() {
@@ -54,9 +54,8 @@ export function VenuesChapter({venueIndex}:{venueIndex:0|1}) {
    <VenueArtworkSlot src={isWedding?'/images/venue-nagpur-watercolor.webp':'/images/venue-thane-watercolor.webp'}/>
    <address data-scroll-detail>{v.lines.map(line=><span key={line}>{line}<br/></span>)}</address>
    {isWedding && <div className="venue-celebrations" data-scroll-detail><p className="book-label">Celebrations at this venue</p><p><span>Bride's Mehendi <i>·</i> Engagement</span> <i>·</i> <span>Haldi <i>·</i> Wedding</span></p></div>}
-   <div className="venue-actions"><a className="book-direction" href={'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(v.query)} target="_blank" rel="noreferrer">{isWedding ? 'Directions to Maharaja Celebrations ↗' : 'Get directions ↗'}</a><CalendarControls index={venueIndex}/></div>
+   <div className="venue-actions"><a className="book-direction" href={'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(v.query)} target="_blank" rel="noreferrer">{isWedding ? 'Directions to Maharaja Celebrations ↗' : 'Get directions ↗'}</a><CalendarControls index={venueIndex}/>{isWedding && <ShareInvitation/>}</div>
   </section>
-  {!isWedding && <ShareInvitation/>}
  </article>;
 }
 
@@ -68,6 +67,6 @@ export function EpilogueChapter() {
   <img className="epilogue-places-art" src="/images/epilogue-places.webp" alt="Watercolor landmarks representing Mumbai, Nagpur and San Francisco" width="1400" height="467" loading="lazy" decoding="async"/>
   <div className="epilogue-places-caption"><p>Mumbai <span aria-hidden="true">·</span> Nagpur <span aria-hidden="true">·</span> San Francisco</p><p>Three Cities. One Forever.</p></div>
   <img className="book-epilogue-art" src="/images/epilogue-california-watercolor.webp" alt="Watercolor of a couple looking toward the Golden Gate Bridge at sunset" width="890" height="527" loading="lazy" decoding="async"/>
-  <p className="book-signature">Riya <span>&amp;</span> Prashant</p><div className="book-epilogue-divider" aria-hidden="true">✦</div><p className="book-blessing">With Love &amp; Blessings</p><p>Kalburgi &amp; Mahant Families</p><p className="book-gifts">Presents Only in Blessings</p>
+  <p className="book-signature">Prashant <span>&amp;</span> Riya</p><div className="book-epilogue-divider" aria-hidden="true">✦</div><p className="book-blessing">With Love &amp; Blessings</p><p>Mahant &amp; Kalburgi Families</p>
  </article>;
 }

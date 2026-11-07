@@ -1,14 +1,15 @@
-import { wedding, celebrationArrangements as arrangements } from '../data';
+import { wedding, celebrationArrangements as arrangements, groomResidenceAddressLines } from '../data';
 
 const maharajaAddress = [wedding.venues[0].name, ...wedding.venues[0].lines].join(', ');
 const receptionAddress = [wedding.venues[1].name, ...wedding.venues[1].lines].join(', ');
 // Preserve the wedding/reception indexes used by the existing venues chapter.
 export const calendarEvents = [
-  { id:'wedding', title:'Riya & Prashant — Wedding Ceremony', start:'2026-12-03T09:00:00+05:30', location:maharajaAddress, description:`Wedding programme: 9:00 AM onwards IST. Vivah Muhurat: 10:15 AM IST. ${arrangements[4].venue}, ${arrangements[4].floor}. End time has not been specified.` },
-  { id:'reception', title:'Riya & Prashant — Wedding Reception', start:'2026-12-06T18:00:00+05:30', location:receptionAddress, description:`Reception: 6:00 PM onwards IST. Followed by dinner. ${arrangements[5].venue}, ${arrangements[5].floor}. End time has not been specified.` },
-  { id:'mehendi', title:"Riya & Prashant — Bride's Mehendi", start:'2026-12-01T11:15:00+05:30', location:maharajaAddress, description:`Bride's Mehendi: 11:15 AM onwards IST. ${maharajaAddress}, ${arrangements[0].floor}. End time has not been specified.` },
-  { id:'engagement', title:'Riya & Prashant — Engagement', start:'2026-12-02T10:30:00+05:30', location:maharajaAddress, description:`Engagement: 10:30 AM onwards IST. ${arrangements[2].venue}, ${arrangements[2].floor}. End time has not been specified.` },
-  { id:'haldi', title:'Riya & Prashant — Haldi', start:'2026-12-02T16:00:00+05:30', location:maharajaAddress, description:`Haldi: 4:00 PM onwards IST. ${arrangements[3].venue}, ${arrangements[3].floor}. End time has not been specified.` },
+  { id:'wedding', title:'Prashant & Riya — Wedding Ceremony', start:'2026-12-03T09:00:00+05:30', location:maharajaAddress, description:`Wedding programme: 9:00 AM onwards IST. Vivah Muhurat: 10:15 AM IST. ${arrangements[4].venue}, ${arrangements[4].floor}. End time has not been specified.` },
+  { id:'reception', title:'Prashant & Riya — Wedding Reception', start:'2026-12-06T18:00:00+05:30', location:receptionAddress, description:`Reception: 6:00 PM onwards IST. Followed by dinner. ${arrangements[5].venue}, ${arrangements[5].floor}. End time has not been specified.` },
+  { id:'mehendi', title:"Prashant & Riya — Bride's Mehendi", start:'2026-12-01T11:15:00+05:30', location:maharajaAddress, description:`Bride's Mehendi: 11:15 AM onwards IST. ${maharajaAddress}, ${arrangements[0].floor}. End time has not been specified.` },
+  { id:'engagement', title:'Prashant & Riya — Engagement', start:'2026-12-02T10:05:00+05:30', location:maharajaAddress, description:`Engagement: 10:05 AM onwards IST. ${arrangements[2].venue}, ${arrangements[2].floor}. End time has not been specified.` },
+  { id:'haldi', title:'Prashant & Riya — Haldi', start:'2026-12-02T16:00:00+05:30', location:maharajaAddress, description:`Haldi: 4:00 PM onwards IST. ${arrangements[3].venue}, ${arrangements[3].floor}. End time has not been specified.` },
+  { id:'groom-mehendi', title:"Prashant & Riya — Groom's Mehendi", start:'2026-12-01T11:15:00+05:30', location:groomResidenceAddressLines.join(', '), description:"Groom's Mehendi: 11:15 AM onwards IST at Prashant's Residence. End time has not been specified." },
 ];
 export type CalendarEvent = typeof calendarEvents[number];
 export const utcStamp = (date: string | Date) => new Date(date).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
@@ -32,7 +33,7 @@ function foldLine(line: string) {
 }
 export function createICS(event: CalendarEvent, now = new Date()) {
   // RFC 5545 permits DTSTART without DTEND/DURATION when no end is known.
-  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Riya and Prashant//Wedding Invitation//EN',
+  return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Prashant and Riya//Wedding Invitation//EN',
     'CALSCALE:GREGORIAN', 'BEGIN:VEVENT', `UID:${event.id}-2026@riya-prashant-invitation.invalid`,
     `DTSTAMP:${utcStamp(now)}`, `DTSTART:${utcStamp(event.start)}`,
     `SUMMARY:${escapeICS(event.title)}`, `DESCRIPTION:${escapeICS(event.description)}`,

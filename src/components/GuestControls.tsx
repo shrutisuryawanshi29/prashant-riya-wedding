@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowUp, CalendarPlus, Share2 } from 'lucide-react';
 import { calendarEvents, downloadCalendar, googleCalendarUrl } from '../utils/calendarUtils';
-import { canonicalUrl, invitationShareText, whatsappUrl } from '../utils/shareUtils';
+import { canonicalUrl, invitationShareText, publicSiteUrl, whatsappUrl } from '../utils/shareUtils';
 
 export function CalendarControls({index}: {index: number}) {
   const event = calendarEvents[index];
@@ -9,15 +9,22 @@ export function CalendarControls({index}: {index: number}) {
 }
 export function ShareInvitation() {
   const [fallback, setFallback] = useState(false);
+  const [message, setMessage] = useState('');
   async function share() {
-    if (!canonicalUrl) return;
+    if (!canonicalUrl) { setMessage('Sharing will be available when this site has a public HTTPS address.'); return; }
     if (navigator.share) {
-      try { await navigator.share({title: 'Riya & Prashant — Our Wedding Story', text: invitationShareText, url: canonicalUrl}); return; }
+      try { await navigator.share({title: 'Prashant & Riya | Our Wedding Story', text: invitationShareText, url: canonicalUrl}); setFallback(false); setMessage(''); return; }
       catch (error) { if (error instanceof DOMException && error.name === 'AbortError') return; }
     }
+    setMessage('');
     setFallback(true);
   }
-  return <div className="share-invitation"><button type="button" onClick={share} disabled={!canonicalUrl} title={!canonicalUrl ? 'Sharing will be available once the public website URL is configured.' : undefined}><Share2 size={14}/> Share Invitation</button>{fallback && canonicalUrl && <a href={whatsappUrl(canonicalUrl)} target="_blank" rel="noreferrer">Share on WhatsApp</a>}</div>;
+  async function copyLink() {
+    if (!canonicalUrl) return;
+    try { await navigator.clipboard.writeText(canonicalUrl); setMessage('Invitation link copied.'); }
+    catch { setMessage('Copy the invitation link shown below.'); }
+  }
+  return <div className="share-invitation" onClick={event => event.stopPropagation()}><button type="button" onClick={share}><Share2 size={14}/> Share Invitation</button>{fallback && canonicalUrl && <div><button type="button" onClick={copyLink}>Copy invitation link</button>{publicSiteUrl(canonicalUrl) && <a href={whatsappUrl(canonicalUrl)} target="_blank" rel="noreferrer">Share on WhatsApp</a>}<p className="share-link">{canonicalUrl}</p></div>}<p role="status">{message}</p></div>;
 }
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
