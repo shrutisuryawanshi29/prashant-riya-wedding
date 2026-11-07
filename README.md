@@ -17,15 +17,15 @@ Edit `src/data.ts` for names, family details, invocations, event information, ve
 
 ## Add photographs
 
-Place optimized images in `public/images/` and set `portraits.bride`, `portraits.groom`, and entries in `gallery` in `src/data.ts` to paths such as `/images/riya.jpg`. Portrait-oriented images work best for the arched frames. The site displays neutral placeholders until paths are supplied. Update the alt text in `src/main.tsx` if needed. The current sharing preview is `public/images/groom-social-preview-v1.jpg` (1200 × 630).
+Place optimized images in `public/images/` and set `portraits.bride`, `portraits.groom`, and entries in `gallery` in `src/data.ts` to paths such as `/images/riya.jpg`. Portrait-oriented images work best for the arched frames. The site displays neutral placeholders until paths are supplied. Update the alt text in `src/main.tsx` if needed. The current sharing preview is `public/images/groom-social-preview-v2.jpg` (1200 × 630).
 
 Google Fonts requires a network connection; fallback serif fonts are provided. Directions open Google Maps searches using the supplied addresses; map pins have not been independently verified.
 
 ## Guest sharing and deployment
 
-Configure `VITE_SITE_URL` with this project’s own public HTTPS URL in its deployment environment, then rebuild. Do not reuse the original wedding website’s Vercel project or URL. Never configure a localhost or private address. `.env.example` documents the setting for local development. Without a configured public HTTPS URL, the share control is disabled and URL-dependent metadata is omitted.
+Production metadata defaults to `https://prashant-riya-wedding.vercel.app/`. Set `VITE_SITE_URL` in the deployment environment if this project moves to a different public HTTPS URL, then rebuild. Do not reuse the original wedding website’s Vercel project or URL. Never configure a localhost or private address. `.env.example` documents the setting for local development. Without a configured public HTTPS URL, the share control is disabled and URL-dependent metadata is omitted.
 
-Vite injects canonical, Open Graph URL/image/dimensions and Twitter image metadata into the served HTML, so crawlers do not need JavaScript. The static preview uses the current indoor photograph and cover artwork in a landscape composition. After deploying, verify `/images/groom-social-preview-v1.jpg` returns HTTP 200 publicly and check the HTML source. WhatsApp caches previews and may show an earlier preview for some time after deployment.
+Vite injects canonical, Open Graph URL/image/dimensions and Twitter image metadata into the served HTML, so crawlers do not need JavaScript. The static preview uses the current indoor photograph and cover artwork in a landscape composition. After deploying, verify `/images/groom-social-preview-v2.jpg` returns HTTP 200 publicly and check the HTML source. WhatsApp caches previews and may show an earlier preview for some time after deployment.
 
 Share Invitation uses the native share sheet when available. If unsupported or unsuccessful, an explicit Share on WhatsApp link appears; cancellation closes the share sheet without launching another app. Browsing never requires WhatsApp.
 

@@ -36,6 +36,6 @@ assert.equal(new URL(share.whatsappUrl(share.canonicalUrl)).searchParams.get('te
 const escaped = calendar.createICS({...calendar.calendarEvents[0], title:'A, B; C\\D\nE'}).replace(/\r\n /g,'');
 assert.ok(escaped.includes('SUMMARY:A\\, B\\; C\\\\D\\nE'));
 const html=fs.readFileSync('dist/index.html','utf8');
-for(const value of ['og:url','og:image','og:image:width','og:image:height','twitter:card','https://example.com/images/groom-social-preview-v1.jpg']) assert.ok(html.includes(value));
+for(const value of ['og:url','og:image','og:image:width','og:image:height','twitter:card','https://example.com/images/groom-social-preview-v2.jpg']) assert.ok(html.includes(value));
 assert.ok(!html.includes('localhost'));
 console.log('Passed: IST/UTC calendar starts, Google Calendar values, ICS folding/escaping, unknown end handling, share encoding, public URL validation, static production metadata.');
