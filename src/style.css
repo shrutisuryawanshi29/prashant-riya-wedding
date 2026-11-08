@@ -925,3 +925,7 @@ html.storybook-document, html.storybook-document body, html.storybook-document #
 /* Keep the share fallback readable and keyboard focus visible within the paper. */
 .share-invitation button:focus-visible,.share-invitation a:focus-visible { outline:2px solid #a87730; outline-offset:3px; }
 .share-invitation .share-link { overflow-wrap:anywhere; font-size:14px; }
+
+/* Book-relative decorative particle canvas. */
+.stardust-layer { position:absolute; inset:0; width:100%; height:100%; z-index:100; pointer-events:none; }
+@media (prefers-reduced-motion:reduce) { .stardust-layer { display:none; } }

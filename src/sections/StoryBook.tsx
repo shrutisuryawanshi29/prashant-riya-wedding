@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom';
 import { PageFlip } from 'page-flip';
 import { wedding } from '../data';
 import { BookPageFrame } from '../components/BookPageFrame';
+import { HorizontalPageTurnStardust, StardustTrail } from '../components/HorizontalPageTurnStardust';
+
+const ENABLE_STARDUST_PROTOTYPE = true;
 import { BookScrollRegion } from '../components/BookScrollRegion';
 import { CelebrationPage, type CelebrationId } from './CelebrationPage';
 import { InvitationChapter, VenuesChapter, EpilogueChapter } from './BookChapters';
@@ -44,7 +47,8 @@ export function StoryBook() {
   const menuArea = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
-  const turnAction = useRef<(page: Page) => void>(() => {});
+  const stardust = useRef<HTMLCanvasElement>(null);
+  const turnAction = useRef<(page: Page, withStardust?: boolean) => void>(() => {});
   // React owns each page's contents; StPageFlip owns only its outer paper node.
   const sheets = useMemo(() => pages.map((id, index) => {
     const element = document.createElement('article');
@@ -53,7 +57,7 @@ export function StoryBook() {
     element.dataset.chapter = id;
     return element;
   }), []);
-  function turn(target: Page) { if (target) { setMenuOpen(false); turnAction.current(target); } }
+  function turn(target: Page, withStardust = false) { if (target) { setMenuOpen(false); turnAction.current(target, withStardust); } }
   useEffect(() => {
     if (!menuOpen) return;
     menuArea.current?.querySelector<HTMLButtonElement>('.chapter-menu-panel button')?.focus({preventScroll:true});
@@ -78,6 +82,29 @@ export function StoryBook() {
     let locked = false, focusAfter = false, historyTurn = false;
     let queuedHistory: Page | null = null;
     let pendingResize = false;
+    let sparkleFrame = 0;
+    const trail = stardust.current ? new StardustTrail(stardust.current) : null;
+    function stopStardust() { cancelAnimationFrame(sparkleFrame); sparkleFrame = 0; trail?.finish(); }
+    function startStardust(forward: boolean) {
+      cancelAnimationFrame(sparkleFrame);
+      if (!trail || motion.matches || !ENABLE_STARDUST_PROTOTYPE) return;
+      const width = host.clientWidth, height = host.clientHeight;
+      trail.start(forward, width, height);
+      // StPageFlip scales its configured duration by the number of steps in
+      // a button turn; this uses the same documented start/end dimensions.
+      const steps = Math.floor(Math.max(2 * width - height / 10, height / 10)) + 1;
+      const duration = renderer.getSettings().flippingTime * Math.min(1, steps / 1000);
+      const startedAt = performance.now();
+      const tick = (now: number) => {
+        if (motion.matches || renderer.getState() === 'read') { stopStardust(); return; }
+        const progress = Math.min(1, Math.max(0, (now - startedAt) / duration));
+        const inset = width * .04;
+        const position = inset + (width - inset * 2) * (forward ? 1 - progress : progress);
+        trail.update(position, now);
+        sparkleFrame = requestAnimationFrame(tick);
+      };
+      sparkleFrame = requestAnimationFrame(tick);
+    }
     const offsets = pages.map(() => 0);
     const motion = matchMedia('(prefers-reduced-motion: reduce)');
     const region = (sheet: HTMLElement) => sheet.querySelector<HTMLElement>('.book-page-scroll')!;
@@ -122,27 +149,29 @@ export function StoryBook() {
     renderer.on('flip', () => { if (!locked) complete(); });
     renderer.on('changeState', event => {
       locked = event.data !== 'read'; setTurning(locked);
-      if (!locked) complete(); else syncSurfaces();
+      if (!locked) { stopStardust(); complete(); } else syncSurfaces();
     });
     renderer.loadFromHTML(sheets);
     const clones = new MutationObserver(records => {if (records.some(record => record.addedNodes.length)) syncSurfaces();});
     clones.observe(host, {childList:true, subtree:true});
     const observer = new ResizeObserver(resize); observer.observe(host);
-    function go(target: Page, fromHistory = false) {
+    function go(target: Page, fromHistory = false, withStardust = false) {
       if (locked || renderer.getState() !== 'read') {if (fromHistory) queuedHistory = target; return;}
       const current = renderer.getCurrentPageIndex(), next = pages.indexOf(target);
       if (next < 0 || current === next) return;
+      if (!withStardust) { cancelAnimationFrame(sparkleFrame); sparkleFrame = 0; trail?.destroy(); }
       offsets[current] = region(sheets[current]).scrollTop;
       // Load only the requested chapter artwork ahead of its turn.
       sheets[next].querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
       focusAfter = true; historyTurn = fromHistory;
       if (motion.matches) {renderer.turnToPage(next); return;}
       locked = true; setTurning(true); syncSurfaces();
+      if (withStardust && Math.abs(next - current) === 1) startStardust(next > current);
       if (next === current+1) renderer.flipNext('bottom');
       else if (next === current-1) renderer.flipPrev('bottom');
       else renderer.flip(next, 'bottom');
     }
-    turnAction.current = target => go(target);
+    turnAction.current = (target, withStardust) => go(target, false, withStardust);
     const historyChange = () => go(pageFromHash(), true);
     window.addEventListener('popstate', historyChange); window.addEventListener('hashchange', historyChange);
     const keydown = (event: KeyboardEvent) => {
@@ -152,30 +181,18 @@ export function StoryBook() {
       if (direction && target) {event.preventDefault(); go(target);}
     };
     host.addEventListener('keydown', keydown);
-    let touch: {x:number;y:number} | null = null;
-    const touchStart = (event: TouchEvent) => {
-      touch = (event.target as HTMLElement).closest('button,a,summary,select,input,img,photo') ? null : {x:event.touches[0].clientX,y:event.touches[0].clientY};
-    };
-    const touchEnd = (event: TouchEvent) => {
-      if (!touch) return;
-      const dx=event.changedTouches[0].clientX-touch.x, dy=event.changedTouches[0].clientY-touch.y; touch=null;
-      const target = pages[renderer.getCurrentPageIndex()+(dx<0?1:-1)];
-      if (target && Math.abs(dx)>80 && Math.abs(dx)>Math.abs(dy)*2) go(target);
-    };
-    const touchCancel = () => {touch=null;};
-    host.addEventListener('touchstart',touchStart,{passive:true});host.addEventListener('touchend',touchEnd,{passive:true});host.addEventListener('touchcancel',touchCancel,{passive:true});
     sheets.forEach((sheet, i) => sheet.querySelectorAll('img').forEach(img => { if (i !== renderer.getCurrentPageIndex()) img.loading='lazy'; }));
     syncSurfaces();
     return () => {
-      turnAction.current = () => {}; clones.disconnect(); observer.disconnect();
+      cancelAnimationFrame(sparkleFrame); trail?.destroy(); turnAction.current = () => {}; clones.disconnect(); observer.disconnect();
       window.removeEventListener('popstate',historyChange);window.removeEventListener('hashchange',historyChange);
-      host.removeEventListener('keydown',keydown);host.removeEventListener('touchstart',touchStart);host.removeEventListener('touchend',touchEnd);host.removeEventListener('touchcancel',touchCancel);
+      host.removeEventListener('keydown',keydown);
       // Keep React portal containers alive while the renderer removes its wrappers.
       sheets.forEach(sheet => sheet.remove()); renderer.destroy();
     };
   }, [sheets]);
   function content(which: Page) {switch(which) {
-    case 'cover': return <BookCover open={() => turn('invitation')}/>;
+    case 'cover': return <BookCover open={() => turn('invitation', true)}/>;
     case 'invitation': return <InvitationChapter/>;
     case 'mehendi': case 'engagement': case 'haldi': case 'wedding': return <CelebrationPage id={which}/>;
     case 'venues': return <VenuesChapter venueIndex={0}/>;
@@ -190,13 +207,13 @@ export function StoryBook() {
         <button ref={menuButton} className="chapter-menu-trigger" aria-label="Chapter menu" aria-expanded={menuOpen} aria-controls="mobile-chapter-menu" disabled={turning} onClick={()=>setMenuOpen(!menuOpen)}><span aria-hidden="true">☰</span></button>
         {menuOpen && <nav className="chapter-menu-panel" id="mobile-chapter-menu" aria-label="Choose a chapter">{pages.map((id,i)=><button key={id} aria-current={id===page?'page':undefined} onClick={()=>{if(id===page){setMenuOpen(false);menuButton.current?.focus();}else turn(id);}}>{labels[i]}</button>)}</nav>}
       </div>
-      <div className="book-flip-viewport" ref={viewport}/>
+      <div className="book-flip-viewport" ref={viewport}><HorizontalPageTurnStardust ref={stardust}/></div>
 
     </div>
     {sheets.map((sheet,i)=>createPortal(<div className={"book-sheet-content"+(i===0?" book-sheet-cover":"")}>
       <BookPageFrame/>
       <BookScrollRegion cover={i===0} active={page===pages[i] && !turning} venueCue={['mehendi','engagement','haldi','wedding','venues'].includes(pages[i])} hintSeen={scrollHintSeen} onFirstScroll={dismissScrollHint}>{chapterContent[i]}</BookScrollRegion>
-      {i>0 && <div className="book-controls"><button aria-label="Previous page" onClick={()=>turn(pages[i-1])}>←</button><span className="book-page-number"><small>{pages[i]==='epilogue'?'Epilogue':`Chapter ${i===1?1:i<=5?2:3} of 3`}</small>{String(i+1).padStart(2,'0')} / {pages.length}</span><button aria-label="Next page" disabled={i===pages.length-1} onClick={()=>turn(pages[i+1])}>→</button></div>}
+      {i>0 && <div className="book-controls"><button aria-label="Previous page" onClick={()=>turn(pages[i-1], true)}>←</button><span className="book-page-number"><small>{pages[i]==='epilogue'?'Epilogue':`Chapter ${i===1?1:i<=5?2:3} of 3`}</small>{String(i+1).padStart(2,'0')} / {pages.length}</span><button aria-label="Next page" disabled={i===pages.length-1} onClick={()=>turn(pages[i+1], true)}>→</button></div>}
     </div>,sheet,pages[i]))}
     <p className="book-status" aria-live="polite">{labels[pages.indexOf(page)]} · {pages.indexOf(page)+1} of {pages.length}</p>
   </section>;

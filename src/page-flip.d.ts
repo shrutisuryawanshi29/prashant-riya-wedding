@@ -5,7 +5,7 @@ declare module 'page-flip' {
     loadFromHTML(elements: HTMLElement[]): void;
     getCurrentPageIndex(): number;
     getState(): string;
-    getSettings(): {width:number; height:number};
+    getSettings(): {width:number; height:number; flippingTime:number};
     flipNext(corner?: string): void;
     flipPrev(corner?: string): void;
     flip(index:number, corner?:string): void;
